@@ -27,7 +27,7 @@ jobs:
         run: zip -r ${{ env.DEPLOY_PACKAGE_NAME }} ./ -x *.git*
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume:  arn:aws:iam::242660385949:role/role-for-github-actions
           aws-region: ${{ env.AWS_REGION_NAME }}
