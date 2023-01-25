@@ -4,7 +4,7 @@ env:
   EB_APPLICATION_NAME: "simple-react-app"
   EB-ENVIRONMENT_NAME: "Simplereactapp-env"
   DEPLOY_PACKAGE_NAME: "github-actions-${{ github.sha }}.zip"
-  AWS_REGION_NAME: "us-east-1"
+  AWS_REGION_NAME: "eu-west-2"
 on:
   push:
     branches:
