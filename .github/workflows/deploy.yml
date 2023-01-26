@@ -1,4 +1,5 @@
 name: CI-CD-Pipeline
+
 env:
   S3_BUCKET_NAME: "github-actions-app"
   EB_APPLICATION_NAME: "GithubActions"
