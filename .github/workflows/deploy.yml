@@ -2,7 +2,7 @@ name: CI-CD-Pipeline
 env:
   S3_BUCKET_NAME: "github-actions-app"
   EB_APPLICATION_NAME: "simple-react-app"
-  EB-ENVIRONMENT_NAME: "Simplereactapp-env"
+  EB_ENVIRONMENT_NAME: "Simplereactapp-env"
   DEPLOY_PACKAGE_NAME: "github-actions-${{ github.sha }}.zip"
   AWS_REGION_NAME: "eu-west-2"
 on:
@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 jobs:
-  ci-part:
+  CI-part:
 
     runs-on: ubuntu-latest
 
@@ -34,10 +34,35 @@ jobs:
       - name: Configure AWS Credentials
         uses: fuller-inc/actions-aws-assume-role@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET_KEY }}
           role-to-assume: arn:aws:iam::242660385949:role/role-for-github-actions
           aws-region: ${{ env.AWS_REGION_NAME }}
 
       - name: Upload ZIP package to S3 Bucket
         run: aws s3 cp ${{ env.DEPLOY_PACKAGE_NAME }} s3://${{ env.S3_BUCKET_NAME }}/
+
+  CD-part:
+
+    runs-on: ubuntu-latest
+    needs: [CI-part]
+
+    steps:
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Configure AWS Credentials
+        uses: fuller-inc/actions-aws-assume-role@v1
+        with:
+          role-to-assume: arn:aws:iam::242660385949:role/role-for-github-actions
+          aws-region: ${{ env.AWS_REGION_NAME }}
+
+      - name: Create ElasticBeanstalk Application Version
+        run: |
+          aws elasticbeanstalk create-application-version \
+          --application-name ${{ env.EB_APPLICATION_NAME }} \
+          --source-bundle S3Bucket="${{ env.S3_BUCKET_NAME }}",S3Key="${{ env.DEPLOY_PACKAGE_NAME }}" \
+          --version-label "version-${{ github.sha }}"
+
+      - name: Deploy ElasticBeanstalk Application!
+        run: aws elasticbeanstalk update-environment --environment-name ${{ env.EB_ENVIRONMENT_NAME }} --version-label "version-${{ github.sha }}"
