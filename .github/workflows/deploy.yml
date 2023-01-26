@@ -1,8 +1,8 @@
 name: CI-CD-Pipeline
 env:
   S3_BUCKET_NAME: "github-actions-app"
-  EB_APPLICATION_NAME: "simple-react-app"
-  EB_ENVIRONMENT_NAME: "Simplereactapp-env"
+  EB_APPLICATION_NAME: "GithubActions"
+  EB_ENVIRONMENT_NAME: "Githubactions-env"
   DEPLOY_PACKAGE_NAME: "github-actions-${{ github.sha }}.zip"
   AWS_REGION_NAME: "eu-west-2"
 on:
